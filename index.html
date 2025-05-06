@@ -25,7 +25,8 @@
         💸 Stop overpaying! We scan top insurers to find your <strong>$29/month</strong> rate in <span class="state-name">Your State</span> within 24 hours. Drivers here save an average of <strong class="full-prem">$542/year</strong>. If we can't secure your $29/mo deal in a day, you get <strong>$500</strong>💪 No wasted time. No bad deal.
       </p>
       <a
-        href="#quote"
+        id="cta-btn"
+        href="#"
         class="inline-block rounded-2xl bg-indigo-600 px-6 py-3 text-white font-semibold shadow-lg hover:scale-105 transition"
       >
         Get My $29/mo Quote (Or $500!)
@@ -69,6 +70,12 @@
           document.querySelectorAll('.full-prem').forEach(el=>el.textContent = formatted + "/year");
         }
 
+        // Set affiliate offer link dynamically
+        const offerBase = "https://www.google.com/";
+        const ctaBtn = document.getElementById("cta-btn");
+        const stateParam = stateAbbr ? `?state=${stateAbbr.toUpperCase()}` : "";
+        ctaBtn.href = offerBase + stateParam;
+
         /* --- Infinite vertical ticker --- */
         const quotes=[
           {name:"Emily", zip:"30303", car:"2019 Honda Civic", price:29},
@@ -86,13 +93,11 @@
           li.innerHTML=`<span class='text-left'>${q.name}</span><span class='text-center'>${q.zip}</span><span class='text-center'>${q.car}</span><span class='text-right font-bold text-indigo-600'>$${q.price}/mo</span>`;
           return li;
         }
-        // Duplicate list for seamless scroll
         quotes.concat(quotes).forEach(q=>list.appendChild(createRow(q)));
 
-        // Compute scroll height (half of total list)
         const totalHeight=list.scrollHeight/2;
         list.style.setProperty('--scroll-height', totalHeight+'px');
-        const duration=quotes.length*2; // seconds, 2s per row
+        const duration=quotes.length*2;
         list.style.animation=`vertical-scroll ${duration}s linear infinite`;
       })();
     </script>
