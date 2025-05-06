@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dynamic State Landing – AutoQuote</title>
+    <!-- Tailwind CDN (remove if bundling separately) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Inline CSS for vertical ticker animation -->
+    <style>
+      @keyframes vertical-scroll {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(calc(-1 * var(--scroll-height))); }
+      }
+    </style>
+  </head>
+  <body class="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-10">
+    <!-- 🌟 HERO 🌟 -->
+    <header class="text-center space-y-4 max-w-xl">
+      <h1 class="text-3xl sm:text-4xl font-extrabold leading-tight">
+        Get <span class="text-indigo-600">$29/mo</span> Car Insurance in <span class="state-name">Your State</span> Within 24 Hrs – Guaranteed $500 If We Can't
+      </h1>
+      <p class="text-base sm:text-lg text-gray-700">
+        💸 Stop overpaying! We scan top insurers to find your <strong>$29/month</strong> rate in <span class="state-name">Your State</span> within 24 hours. Drivers here save an average of <strong class="full-prem">$542/year</strong>. If we can't secure your $29/mo deal in a day, you get <strong>$500</strong>💪 No wasted time. No bad deal.
+      </p>
+      <a
+        href="#quote"
+        class="inline-block rounded-2xl bg-indigo-600 px-6 py-3 text-white font-semibold shadow-lg hover:scale-105 transition"
+      >
+        Get My $29/mo Quote (Or $500!)
+      </a>
+    </header>
+
+    <!-- 🚗 QUOTE TICKER -->
+    <section id="quote" class="mt-16 w-full max-w-2xl bg-white shadow-xl rounded-2xl p-8">
+      <p class="quote-tag font-medium text-gray-800 text-center mb-4">
+        Real quotes people just found near you in <span class="state-name">Your State</span>:
+      </p>
+      <div id="quote-ticker" class="overflow-hidden h-40 relative">
+        <ul id="quote-list" class="space-y-1 text-center"></ul>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="mt-20 text-sm text-gray-400 text-center">
+      © 2025 AutoQuoteMarket. All rights reserved.
+    </footer>
+
+    <!-- 🎯 Dynamic State, Premium & Infinite Ticker Script -->
+    <script>
+      (function () {
+        const params = new URLSearchParams(window.location.search);
+
+        /* --- State name + premium injection --- */
+        const STATE_MAP = {
+          AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",CO:"Colorado",CT:"Connecticut",DE:"Delaware",FL:"Florida",GA:"Georgia",HI:"Hawaii",ID:"Idaho",IL:"Illinois",IN:"Indiana",IA:"Iowa",KS:"Kansas",KY:"Kentucky",LA:"Louisiana",ME:"Maine",MD:"Maryland",MA:"Massachusetts",MI:"Michigan",MN:"Minnesota",MS:"Mississippi",MO:"Missouri",MT:"Montana",NE:"Nebraska",NV:"Nevada",NH:"New Hampshire",NJ:"New Jersey",NM:"New Mexico",NY:"New York",NC:"North Carolina",ND:"North Dakota",OH:"Ohio",OK:"Oklahoma",OR:"Oregon",PA:"Pennsylvania",RI:"Rhode Island",SC:"South Carolina",SD:"South Dakota",TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",VA:"Virginia",WA:"Washington",WV:"West Virginia",WI:"Wisconsin",WY:"Wyoming",DC:"District of Columbia"
+        };
+        let stateFull = params.get("stateFull") || params.get("state") ;
+        const stateAbbr = params.get("stateAbbr") || params.get("state");
+        if (!stateFull && stateAbbr) stateFull = STATE_MAP[(stateAbbr||"").toUpperCase()] || null;
+        const fallback = "Your State";
+        stateFull = stateFull || fallback;
+        document.querySelectorAll('.state-name').forEach(el=>el.textContent=stateFull);
+
+        const fullPremParam = params.get("fullPrem");
+        if (fullPremParam) {
+          const formatted = "$" + Number(fullPremParam).toLocaleString();
+          document.querySelectorAll('.full-prem').forEach(el=>el.textContent = formatted + "/year");
+        }
+
+        /* --- Infinite vertical ticker --- */
+        const quotes=[
+          {name:"Emily", zip:"30303", car:"2019 Honda Civic", price:29},
+          {name:"Michael", zip:"75201", car:"2021 Ford F‑150", price:35},
+          {name:"Sarah", zip:"98052", car:"2020 Toyota RAV4", price:31},
+          {name:"Jose", zip:"33101", car:"2018 Nissan Altima", price:28},
+          {name:"Grace", zip:"10001", car:"2022 Tesla Model 3", price:42},
+          {name:"David", zip:"60616", car:"2020 Chevy Malibu", price:30},
+        ];
+
+        const list = document.getElementById('quote-list');
+        function createRow(q){
+          const li=document.createElement('li');
+          li.className='grid grid-cols-4 gap-2 w-full px-4 text-sm sm:text-base';
+          li.innerHTML=`<span class='text-left'>${q.name}</span><span class='text-center'>${q.zip}</span><span class='text-center'>${q.car}</span><span class='text-right font-bold text-indigo-600'>$${q.price}/mo</span>`;
+          return li;
+        }
+        // Duplicate list for seamless scroll
+        quotes.concat(quotes).forEach(q=>list.appendChild(createRow(q)));
+
+        // Compute scroll height (half of total list)
+        const totalHeight=list.scrollHeight/2;
+        list.style.setProperty('--scroll-height', totalHeight+'px');
+        const duration=quotes.length*2; // seconds, 2s per row
+        list.style.animation=`vertical-scroll ${duration}s linear infinite`;
+      })();
+    </script>
+  </body>
+</html>
